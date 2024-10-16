@@ -245,7 +245,7 @@ function gameLoop(time) {
 function updatePipes() {
     pipes.forEach(pipe => {
         pipe.x -= 2; // 파이프 이동
-        const resultGap = pipeGap - Math.min(level,maxLevel);
+        const resultGap = pipeGap - Math.min(level * 5,maxLevel);
         // 파이프를 그리기
         offscreenCtx.drawImage(pipeImage, pipe.x, 0, pipeWidth, pipe.y);
         offscreenCtx.drawImage(pipeImage, pipe.x, pipe.y + resultGap, pipeWidth, canvas.height);
