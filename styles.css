@@ -1,0 +1,66 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #000;
+}
+
+canvas {
+    display: block;
+    border: 2px solid #000;
+    background-color: #36dffd;
+}
+
+#startScreen
+{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content:end;
+    align-items:center;
+    width: 256px;
+    height: 180px;
+    background-color: rgba(0, 0, 0, 0.0);
+}
+#startButton
+{
+    background-color: rgba(0, 0, 0, 0.0);
+    border: 0;
+}
+#endScreen {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
+    width: 256px;
+    height: 250px;
+    background-color: rgba(0, 0, 0, 0.0);
+    
+}
+#restartButton
+{
+    background-color: rgba(0, 0, 0, 0.0);
+    border: 0;
+    font-weight: bold;
+    color: black;
+    stroke-width: 5px;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: whitesmoke;
+    
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#endScreen p {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rtan Is Bird</title>
+    <link rel="stylesheet" href="styles.css"><!--스타일은 Styles.css 를 적용한다.-->
+</head>
+
+<body>
+    <!-- GameZone-->
+    <canvas id="gameCanvas" width="256" height="350">
+    </canvas>
+
+    <div id="startScreen">
+        <button id="startButton">_____________</button>
+    </div>
+
+    <div id="endScreen" style="display: none;">
+        <p id="scoreText">Score: 0</p>
+        <button id="restartButton">Restart Game</button>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>
