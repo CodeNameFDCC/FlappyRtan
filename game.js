@@ -50,15 +50,15 @@ const restartButton = document.getElementById("restartButton");
 const scoreText = document.getElementById("scoreText");
 //#endregion
 
-window.onload = function(){
+window.onload = function () {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const imageWidth = 240;
     const imageHeight = 240;
     const imageX = canvas.width / 2 - imageWidth / 2;
     const imageY = 15;
-    
+
     ctx.drawImage(gameStartImage, imageX, imageY, imageWidth, imageHeight);
-    
+
 };
 
 
@@ -74,8 +74,8 @@ let currentFrame = 0;
 let lastFrameTime = 0; // 마지막 프레임 시간
 let level = 0;// 난이도
 
-const gravity = 0.3;
-const jump = -5;
+const gravity = 0.15;
+const jump = -2.5;
 const pipeWidth = 50;
 const pipeGap = 120;
 const maxLevel = 70;
@@ -104,7 +104,7 @@ document.addEventListener("keydown", () => {
 //#endregion
 
 //#region 마우스 입력 이벤트
-document.addEventListener("mousedown",()=>{
+document.addEventListener("mousedown", () => {
     if (gameState === "playing") {
         jumpSound.currentTime = 0;
         jumpSound.play();
@@ -198,7 +198,7 @@ function gameLoop(time) {
         // 새의 속도 및 위치 업데이트
         rtan.velocity += gravity;
         rtan.y += rtan.velocity;
-            
+
 
         // 새 애니메이션 갱신 (매 5프레임마다)
         if (frame % 5 === 0) {
@@ -207,36 +207,43 @@ function gameLoop(time) {
         offscreenCtx.drawImage(rtanImages[currentFrame], rtan.x, rtan.y, rtan.width, rtan.height);
 
         // 파이프 생성 (매 100프레임마다)
-        if (frame % 100 === 0) {
+        if (frame % 200 === 0) {
             createPipe();
         }
 
         updatePipes();
 
         // 새가 바닥에 닿았을 경우 게임 종료
+        if (rtan.y <= 0) {
+            rtan.y = 0;
+        }
         if (rtan.y + rtan.height >= canvas.height) {
             gameOver();
         }
-        const text ="Score: " + score;
-        const posX = 10;
-        const posY = 30;
+        const text = "Score: " + score;
+        const text_pos =
+        {
+            x: 10,
+            y: 30
+        };//이것은 Text 위치여
+
         offscreenCtx.fillStyle = "white"; // 점수 텍스트 색상
         offscreenCtx.font = "20px Arial"; // 텍스트 폰트 및 크기
-        offscreenCtx.strokeStyle = "black";
-        offscreenCtx.lineWidth = 2;
-        offscreenCtx.strokeText(text,posX,posY)
-        offscreenCtx.fillText(text, posX, posY); // 화면에 점수 표시 (x=10, y=30 위치에 표시)
+        offscreenCtx.strokeStyle = "black"; // 외각 색상
+        offscreenCtx.lineWidth = 2; //외각 라인 크기
+        offscreenCtx.strokeText(text, text_pos.x, text_pos.y) // 외각 적용
+        offscreenCtx.fillText(text, text_pos.x, text_pos.y); // 화면에 점수 표시 (x=10, y=30 위치에 표시)
 
         // 캔버스를 한 번에 그리기 (더블 버퍼링)
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(offscreenCanvas, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);//비워준 다음
+        ctx.drawImage(offscreenCanvas, 0, 0);//그린다 이미 모두 그려진 캔버스를
 
-        frame++;
+        frame++;//프레임 증가
         requestAnimationFrame(gameLoop); // 다음 프레임 호출
     }
     else {
-        ctx.drawImage(rtanHurt, rtan.x, rtan.y, rtan.width, rtan.height);
-        ctx.drawImage(gameOverImage,0,50,250,128);
+        ctx.drawImage(rtanHurt, rtan.x, rtan.y, rtan.width * 2, rtan.height * 2);// 이건 큰 의미는 없다 이미지가 너무 작아 그래서 키우자 2배로
+        ctx.drawImage(gameOverImage, 0, 50, 250, 128);//게임 오버 이미지도 그려주자
     }
 }
 //#endregion
@@ -244,8 +251,8 @@ function gameLoop(time) {
 //#region 파이프 업데이트
 function updatePipes() {
     pipes.forEach(pipe => {
-        pipe.x -= 2; // 파이프 이동
-        const resultGap = pipeGap - Math.min(level * 5,maxLevel);
+        pipe.x -= 1; // 파이프 이동
+        const resultGap = pipeGap - Math.min(level * 5, maxLevel);
         // 파이프를 그리기
         offscreenCtx.drawImage(pipeImage, pipe.x, 0, pipeWidth, pipe.y);
         offscreenCtx.drawImage(pipeImage, pipe.x, pipe.y + resultGap, pipeWidth, canvas.height);
@@ -259,11 +266,10 @@ function updatePipes() {
         if (pipe.x + pipeWidth < 0) {
             pipe.outOfBounds = true; // 삭제 대신 사망 플래그를 추가
             score += 10; //점수 올리고
-            if(score % 50 ===0)
-                {
-                    level++;
-                    console.log(level);
-                }
+            if (score % 50 === 0) {
+                level++;
+                console.log(level);
+            }
             scoreSound.play();//점수 사운드
         } else {
             // 화면에 있는 파이프만 그리기
