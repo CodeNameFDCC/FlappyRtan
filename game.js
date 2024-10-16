@@ -169,6 +169,7 @@ function initGame() {
     pipes = [];
     score = 0;
     frame = 0;
+    level = 0;
     currentFrame = 0;
     bgmSound.currentTime = 0;
     bgmSound.play();
@@ -197,6 +198,7 @@ function gameLoop(time) {
         // 새의 속도 및 위치 업데이트
         rtan.velocity += gravity;
         rtan.y += rtan.velocity;
+            
 
         // 새 애니메이션 갱신 (매 5프레임마다)
         if (frame % 5 === 0) {
@@ -257,6 +259,11 @@ function updatePipes() {
         if (pipe.x + pipeWidth < 0) {
             pipe.outOfBounds = true; // 삭제 대신 사망 플래그를 추가
             score += 10; //점수 올리고
+            if(score % 50 ===0)
+                {
+                    level++;
+                    console.log(level);
+                }
             scoreSound.play();//점수 사운드
         } else {
             // 화면에 있는 파이프만 그리기
