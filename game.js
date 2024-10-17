@@ -75,9 +75,13 @@ let lastFrameTime = 0; // 마지막 프레임 시간
 let deltaTime = 0;
 let gameTimer = 0;
 let level = 0;// 난이도
+let animationChangeTime = 0;
+let pipeSpawnTime = 0;
 
-const gravity = 50;
-const jump = -50;
+const animationChangeInterval = 0.1;
+const pipeSpawnInterval = 5;
+const gravity = 60;
+const jump = -70;
 const pipeWidth = 50;
 const pipeGap = 120;
 const maxLevel = 70;
@@ -173,7 +177,7 @@ function initGame() {
     frame = 0;
     level = 0;
     gameTimer = 0;
-    lastFrameTime =0;
+    lastFrameTime = 0;
     currentFrame = 0;
     bgmSound.currentTime = 0;
     bgmSound.play();
@@ -204,16 +208,25 @@ function gameLoop() {
         rtan.velocity += gravity * deltaTime;
         rtan.y += rtan.velocity * deltaTime;
 
-        // 새 애니메이션 갱신 (매 5프레임마다)
-        if (frame % 5 === 0) {
+        // 새 애니메이션 갱신 0.1초 마다
+
+        if (animationChangeTime > animationChangeInterval) {
+
             currentFrame = (currentFrame + 1) % rtanImages.length;
+            animationChangeTime=0;
+        }
+        else {
+            animationChangeTime+=deltaTime;
         }
         offscreenCtx.drawImage(rtanImages[currentFrame], rtan.x, rtan.y, rtan.width, rtan.height);
 
-        // 파이프 생성 (매 100프레임마다)
-        if (gam % 200 === 0) {
+        // 파이프 생성 5초 마다
+        if (pipeSpawnTime >= pipeSpawnInterval) {
+            pipeSpawnTime = 0;
             createPipe();
         }
+        else
+            pipeSpawnTime += deltaTime;
 
         updatePipes();
 
@@ -256,7 +269,7 @@ function gameLoop() {
 //#region 파이프 업데이트
 function updatePipes() {
     pipes.forEach(pipe => {
-        pipe.x -= 100 * deltaTime; // 파이프 이동
+        pipe.x -= 50 * deltaTime; // 파이프 이동
         const resultGap = pipeGap - Math.min(level * 5, maxLevel);
         // 파이프를 그리기
         offscreenCtx.drawImage(pipeImage, pipe.x, 0, pipeWidth, pipe.y);
