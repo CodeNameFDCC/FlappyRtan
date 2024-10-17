@@ -213,10 +213,10 @@ function gameLoop() {
         if (animationChangeTime > animationChangeInterval) {
 
             currentFrame = (currentFrame + 1) % rtanImages.length;
-            animationChangeTime=0;
+            animationChangeTime = 0;
         }
         else {
-            animationChangeTime+=deltaTime;
+            animationChangeTime += deltaTime;
         }
         offscreenCtx.drawImage(rtanImages[currentFrame], rtan.x, rtan.y, rtan.width, rtan.height);
 
