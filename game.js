@@ -197,7 +197,7 @@ function gameOver() {
 //#region 게임 루프
 function gameLoop() {
     if (gameState === "playing") {
-        deltaTime = ((frame - lastFrameTime) / 1000) * 60; // 밀리초를 초 단위로 변환
+        deltaTime = ((frame - lastFrameTime) / 1000) ; // 밀리초를 초 단위로 변환
         lastFrameTime = frame;
         gameTimer += deltaTime;
 
@@ -249,7 +249,7 @@ function gameLoop() {
         offscreenCtx.strokeStyle = "black"; // 외각 색상
         offscreenCtx.lineWidth = 2; //외각 라인 크기
         offscreenCtx.strokeText(text, text_pos.x, text_pos.y) // 외각 적용
-        offscreenCtx.strokeText(gameTimer, 100, text_pos.y) // 외각 적용
+        offscreenCtx.fillText(gameTimer, 100, text_pos.y) // 외각 적용
         offscreenCtx.fillText(text, text_pos.x, text_pos.y); // 화면에 점수 표시 (x=10, y=30 위치에 표시)
 
         // 캔버스를 한 번에 그리기 (더블 버퍼링)
