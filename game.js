@@ -197,7 +197,7 @@ function gameOver() {
 //#region 게임 루프
 function gameLoop() {
     if (gameState === "playing") {
-        deltaTime = ((frame - lastFrameTime) / 1000) ; // 밀리초를 초 단위로 변환
+        deltaTime = ((frame - lastFrameTime) / 1000)*30 ; // 밀리초를 초 단위로 변환
         lastFrameTime = frame;
         gameTimer += deltaTime;
 
@@ -244,7 +244,7 @@ function gameLoop() {
             y: 30
         };//이것은 Text 위치여
 
-        offscreenCtx.fillStyle = "white"; // 점수 텍스트 색상
+        offscreenCtx.fillStyle = "red"; // 점수 텍스트 색상
         offscreenCtx.font = "20px Arial"; // 텍스트 폰트 및 크기
         offscreenCtx.strokeStyle = "black"; // 외각 색상
         offscreenCtx.lineWidth = 2; //외각 라인 크기
