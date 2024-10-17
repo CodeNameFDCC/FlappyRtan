@@ -72,10 +72,12 @@ let frame = 0;
 let pipes = [];
 let currentFrame = 0;
 let lastFrameTime = 0; // 마지막 프레임 시간
+let deltaTime = 0;
+let gameTimer = 0;
 let level = 0;// 난이도
 
-const gravity = 0.3;
-const jump = -5;
+const gravity = 50;
+const jump = -50;
 const pipeWidth = 50;
 const pipeGap = 120;
 const maxLevel = 70;
@@ -170,6 +172,8 @@ function initGame() {
     score = 0;
     frame = 0;
     level = 0;
+    gameTimer = 0;
+    lastFrameTime =0;
     currentFrame = 0;
     bgmSound.currentTime = 0;
     bgmSound.play();
@@ -187,118 +191,117 @@ function gameOver() {
 //#endregion
 
 //#region 게임 루프
-function gameLoop(time) {
+function gameLoop() {
     if (gameState === "playing") {
-        if (lastFrameTime < time + 60) {
-            console.log(time - lastFrameTime);
-            const deltaTime = time - lastFrameTime; // 프레임 간의 시간 차 계산
-            lastFrameTime = time;
+        deltaTime = ((frame - lastFrameTime) / 1000) * 60; // 밀리초를 초 단위로 변환
+        lastFrameTime = frame;
+        gameTimer += deltaTime;
 
-            offscreenCtx.clearRect(0, 0, canvas.width, canvas.height);
-            offscreenCtx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+        offscreenCtx.clearRect(0, 0, canvas.width, canvas.height);
+        offscreenCtx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
 
-            // 새의 속도 및 위치 업데이트
-            rtan.velocity += gravity;
-            rtan.y += rtan.velocity;
+        // 새의 속도 및 위치 업데이트
+        rtan.velocity += gravity * deltaTime;
+        rtan.y += rtan.velocity * deltaTime;
 
-
-            // 새 애니메이션 갱신 (매 5프레임마다)
-            if (frame % 5 === 0) {
-                currentFrame = (currentFrame + 1) % rtanImages.length;
-            }
-            offscreenCtx.drawImage(rtanImages[currentFrame], rtan.x, rtan.y, rtan.width, rtan.height);
-
-            // 파이프 생성 (매 100프레임마다)
-            if (frame % 200 === 0) {
-                createPipe();
-            }
+        // 새 애니메이션 갱신 (매 5프레임마다)
+        if (frame % 5 === 0) {
+            currentFrame = (currentFrame + 1) % rtanImages.length;
         }
-            updatePipes();
+        offscreenCtx.drawImage(rtanImages[currentFrame], rtan.x, rtan.y, rtan.width, rtan.height);
 
-            // 새가 바닥에 닿았을 경우 게임 종료
-            if (rtan.y <= 0) {
-                rtan.y = 0;
-            }
-            if (rtan.y + rtan.height >= canvas.height) {
-                gameOver();
-            }
-            const text = "Score: " + score;
-            const text_pos =
-            {
-                x: 10,
-                y: 30
-            };//이것은 Text 위치여
-
-            offscreenCtx.fillStyle = "white"; // 점수 텍스트 색상
-            offscreenCtx.font = "20px Arial"; // 텍스트 폰트 및 크기
-            offscreenCtx.strokeStyle = "black"; // 외각 색상
-            offscreenCtx.lineWidth = 2; //외각 라인 크기
-            offscreenCtx.strokeText(text, text_pos.x, text_pos.y) // 외각 적용
-            offscreenCtx.fillText(text, text_pos.x, text_pos.y); // 화면에 점수 표시 (x=10, y=30 위치에 표시)
-
-            // 캔버스를 한 번에 그리기 (더블 버퍼링)
-            ctx.clearRect(0, 0, canvas.width, canvas.height);//비워준 다음
-            ctx.drawImage(offscreenCanvas, 0, 0);//그린다 이미 모두 그려진 캔버스를
-
-            frame++;//프레임 증가
-            requestAnimationFrame(gameLoop); // 다음 프레임 호출
+        // 파이프 생성 (매 100프레임마다)
+        if (gam % 200 === 0) {
+            createPipe();
         }
-        else {
-            ctx.drawImage(rtanHurt, rtan.x, rtan.y, rtan.width * 2, rtan.height * 2);// 이건 큰 의미는 없다 이미지가 너무 작아 그래서 키우자 2배로
-            ctx.drawImage(gameOverImage, 0, 50, 250, 128);//게임 오버 이미지도 그려주자
+
+        updatePipes();
+
+        // 새가 바닥에 닿았을 경우 게임 종료
+        if (rtan.y <= 0) {
+            rtan.y = 0;
         }
+        if (rtan.y + rtan.height >= canvas.height) {
+            gameOver();
+        }
+        const text = "Score: " + score;
+        const text_pos =
+        {
+            x: 10,
+            y: 30
+        };//이것은 Text 위치여
+
+        offscreenCtx.fillStyle = "white"; // 점수 텍스트 색상
+        offscreenCtx.font = "20px Arial"; // 텍스트 폰트 및 크기
+        offscreenCtx.strokeStyle = "black"; // 외각 색상
+        offscreenCtx.lineWidth = 2; //외각 라인 크기
+        offscreenCtx.strokeText(text, text_pos.x, text_pos.y) // 외각 적용
+        offscreenCtx.strokeText(gameTimer, 100, text_pos.y) // 외각 적용
+        offscreenCtx.fillText(text, text_pos.x, text_pos.y); // 화면에 점수 표시 (x=10, y=30 위치에 표시)
+
+        // 캔버스를 한 번에 그리기 (더블 버퍼링)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);//비워준 다음
+        ctx.drawImage(offscreenCanvas, 0, 0);//그린다 이미 모두 그려진 캔버스를
+
+        frame++;//프레임 증가
+        requestAnimationFrame(gameLoop); // 다음 프레임 호출
     }
-    //#endregion
+    else {
+        ctx.drawImage(rtanHurt, rtan.x, rtan.y, rtan.width * 2, rtan.height * 2);// 이건 큰 의미는 없다 이미지가 너무 작아 그래서 키우자 2배로
+        ctx.drawImage(gameOverImage, 0, 50, 250, 128);//게임 오버 이미지도 그려주자
+    }
+}
+//#endregion
 
-    //#region 파이프 업데이트
-    function updatePipes() {
-        pipes.forEach(pipe => {
-            pipe.x -= 1; // 파이프 이동
-            const resultGap = pipeGap - Math.min(level * 5, maxLevel);
-            // 파이프를 그리기
+//#region 파이프 업데이트
+function updatePipes() {
+    pipes.forEach(pipe => {
+        pipe.x -= 100 * deltaTime; // 파이프 이동
+        const resultGap = pipeGap - Math.min(level * 5, maxLevel);
+        // 파이프를 그리기
+        offscreenCtx.drawImage(pipeImage, pipe.x, 0, pipeWidth, pipe.y);
+        offscreenCtx.drawImage(pipeImage, pipe.x, pipe.y + resultGap, pipeWidth, canvas.height);
+
+        // 충돌 감지
+        if (detectCollision(pipe)) {
+            gameOver();
+        }
+
+        // 화면 밖으로 나간 파이프는 표시하지 않음
+        if (pipe.x + pipeWidth < 0) {
+            pipe.outOfBounds = true; // 삭제 대신 사망 플래그를 추가
+            score += 10; //점수 올리고
+            if (score % 50 === 0) {
+                level++;
+                console.log(level);
+            }
+            scoreSound.play();//점수 사운드
+        } else {
+            // 화면에 있는 파이프만 그리기
             offscreenCtx.drawImage(pipeImage, pipe.x, 0, pipeWidth, pipe.y);
             offscreenCtx.drawImage(pipeImage, pipe.x, pipe.y + resultGap, pipeWidth, canvas.height);
-
-            // 충돌 감지
-            if (detectCollision(pipe)) {
-                gameOver();
-            }
-
-            // 화면 밖으로 나간 파이프는 표시하지 않음
-            if (pipe.x + pipeWidth < 0) {
-                pipe.outOfBounds = true; // 삭제 대신 사망 플래그를 추가
-                score += 10; //점수 올리고
-                if (score % 50 === 0) {
-                    level++;
-                    console.log(level);
-                }
-                scoreSound.play();//점수 사운드
-            } else {
-                // 화면에 있는 파이프만 그리기
-                offscreenCtx.drawImage(pipeImage, pipe.x, 0, pipeWidth, pipe.y);
-                offscreenCtx.drawImage(pipeImage, pipe.x, pipe.y + resultGap, pipeWidth, canvas.height);
-            }
-        });
-
-        // 파이프 배열에서 제거는 나중에 한 번에 처리
-        pipes = pipes.filter(pipe => !pipe.outOfBounds);
-    }
-    //#endregion
-
-    //#region 게임 시작 이벤트
-    startButton.addEventListener("click", () => {
-        startScreen.style.display = "none";
-        gameState = "playing";
-        initGame();
-        gameLoop();
+        }
     });
-    //#endregion
 
-    //#region 게임 재시작 이벤트
-    restartButton.addEventListener("click", () => {
-        endScreen.style.display = "none";
-        gameState = "playing";
-        initGame();
-        gameLoop();
-    });
+    // 파이프 배열에서 제거는 나중에 한 번에 처리
+    pipes = pipes.filter(pipe => !pipe.outOfBounds);
+}
+//#endregion
+
+//#region 게임 시작 이벤트
+startButton.addEventListener("click", () => {
+    startScreen.style.display = "none";
+    gameState = "playing";
+    initGame();
+    gameLoop(0);
+});
+//#endregion
+
+//#region 게임 재시작 이벤트
+restartButton.addEventListener("click", () => {
+    endScreen.style.display = "none";
+    gameState = "playing";
+    initGame();
+    gameLoop(0);
+});
 //#endregion
